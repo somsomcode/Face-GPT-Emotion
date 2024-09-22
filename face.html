@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emotion Detection</title>
+    <script src="https://cdn.jsdelivr.net/gh/ml5js/Intro-ML-Arts-IMA@ml5-build-10-7-19/ml5_build/ml5.min.js"></script>
+    <style>
+      #videoInput {
+        position: relative;
+        display: block;
+        width: 640px;
+        height: 480px;
+        border: 3px solid #fff;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Emotion Detection</h1>
+    <video id="videoInput" autoplay playsinline></video>
+    <p><strong>표정 감지:</strong> <span id="expressionResult"></span></p>
+    <p>
+      <strong>최종 표정 결과:</strong> <span id="finalExpressionResult"></span>
+    </p>
+
+    <script>
+      let faceapi;
+      let detections = [];
+      let expressionDataArray = [];
+
+      const video = document.getElementById("videoInput");
+      const expressionResultElement =
+        document.getElementById("expressionResult");
+      const finalExpressionResultElement = document.getElementById(
+        "finalExpressionResult"
+      );
+
+      // face-api.js 표정 인식 시작
+      async function startFaceRecognition() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          video.srcObject = stream;
+
+          const faceOptions = {
+            withLandmarks: true,
+            withExpressions: true,
+            withDescriptors: true,
+            minConfidence: 0.5,
+          };
+
+          faceapi = ml5.faceApi(video, faceOptions, () => {
+            detectFaces();
+          });
+        } catch (error) {
+          console.error("Error accessing the camera:", error);
+          alert(
+            "카메라 접근 권한이 필요합니다. 브라우저 설정에서 카메라 접근을 허용해주세요."
+          );
+        }
+      }
+
+      function detectFaces() {
+        faceapi.detect((error, result) => {
+          if (error) {
+            console.log(error);
+            return;
+          }
+
+          detections = result;
+          if (detections.length > 0) {
+            const expressions = detections[0].expressions;
+
+            // 각 표정을 퍼센트로 변환
+            const expressionPercentages = {
+              neutral: (expressions.neutral * 100).toFixed(2),
+              happy: (expressions.happy * 100).toFixed(2),
+              angry: (expressions.angry * 100).toFixed(2),
+              sad: (expressions.sad * 100).toFixed(2),
+              disgusted: (expressions.disgusted * 100).toFixed(2),
+              surprised: (expressions.surprised * 100).toFixed(2),
+              fearful: (expressions.fearful * 100).toFixed(2),
+            };
+
+            expressionResultElement.innerHTML = `
+              Neutral: ${expressionPercentages.neutral}%<br>
+              Happy: ${expressionPercentages.happy}%<br>
+              Angry: ${expressionPercentages.angry}%<br>
+              Sad: ${expressionPercentages.sad}%<br>
+              Disgusted: ${expressionPercentages.disgusted}%<br>
+              Surprised: ${expressionPercentages.surprised}%<br>
+              Fearful: ${expressionPercentages.fearful}%
+            `;
+
+            expressionDataArray.push(expressions);
+          }
+
+          faceapi.detect(detectFaces);
+        });
+      }
+
+      startFaceRecognition();
+    </script>
+  </body>
+</html>

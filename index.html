@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speech and Text to GPT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ml5js/Intro-ML-Arts-IMA@ml5-build-10-7-19/ml5_build/ml5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <h1>오늘 하루 어땠어?</h1>
+    <video id="videoInput" width="640" height="480" autoplay muted></video>
+    <button id="startButton">감정 분석 시작</button>
+    <button id="stopButton" disabled>분석 중지</button>
+    <p>
+      <strong>음성 인식된 텍스트:</strong> <span id="recognizedText"></span>
+    </p>
+    <p><strong>표정 감지:</strong> <span id="expressionResult"></span></p>
+    <p>
+      <strong>최종 표정 결과:</strong>
+      <span id="finalExpressionResult"></span>
+    </p>
+    <p><strong>발화 분석 결과:</strong> <span id="gptResponse"></span></p>
+    <p><strong>남은 시간:</strong> <span id="timer">30</span>초</p>
+
+    <script src="facialExpression.js"></script>
+    <script src="speechRecognition.js"></script>
+  </body>
+</html>
